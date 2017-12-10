@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <title>Search Engine</title>
+  <style>
+    #se-bar {
+      padding: 20px;
+      /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); */
+      background-color: #f9f9f9;
+      border-bottom: 1px solid #eee;
+    }
+    #se-input-input {
+      max-width: 600px;
+    }
+    #se-input-submit {
+      cursor: pointer;
+    }
+
+    #res-col {
+      padding: 20px;
+    }
+
+    .res-item {
+      border: 1px solid #eee;
+      padding: 20px;
+      cursor: pointer;
+    }
+
+    .res-item:hover {
+      background-color: #eee;
+    }
+
+    #song-col {
+      border-left: 1px solid #eee;
+      height: calc(100vh - 130px);
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  
+  <div id="se-bar">
+    <div class="container">
+      <h4 id="se-title">Search Music</h4>
+      <div class="input-group" id="se-input">
+        <input id="se-input-input" type="text" class="form-control" placeholder="Insert query">
+        <span class="input-group-btn">
+          <button class="btn btn-secondary" type="button" id="se-input-submit">Search</button>
+        </span>
+      </div>
+    </div> 
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6" id="res-col">
+        <h5>Results</h5>
+        <div id="res-list-container">
+          <div class="res-item">
+            <span class="res-item-title">Song title</span>
+          </div>
+          <div class="res-item">
+              <span class="res-item-title">Song title</span>
+          </div>
+          <div class="res-item">
+              <span class="res-item-title">Song title</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6" id="song-col">
+        <div id="song-container">
+          <h3>Song Title</h3>
+          <p>Lyrics</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+</body>
+</html>
