@@ -74,6 +74,22 @@ class VSM:
             print song
             print
 
+    def get_doc_results(self, results, n):
+        if not n:
+            n = 10
+
+        res = []
+        for i in range(n):
+            doc_id = results[i][0]
+            score = results[i][1]
+
+            if score == 0:
+                break
+
+            res.append({ 'rank': i+1, 'score': score, 'song': self.songs[doc_id] })
+
+        return res
+
     def get_scores_tf(self, query):
         query_vector = make_vector(get_tf_for_query(self.tf, query))
         scores = {}
@@ -98,18 +114,26 @@ class VSM:
         results = self.get_scores_tf_idf(query)
         self.display(results)
 
+    def search_api(self, query, n=None):
+        results = self.get_scores_tf_idf(query)
+        return self.get_doc_results(results, n)
+
+
+pathname = os.path.dirname(sys.argv[0])
+ROOT_DIR = os.path.abspath(pathname)
+DATA_DIR = 'data'
+
+def get_vsm(dir=None):
+    if not dir:
+        dir = os.path.join(ROOT_DIR, DATA_DIR)
+    corpus = pickle.load(open(os.path.join(dir, 'corpus.pickle'), 'rb'))
+    tf = pickle.load(open(os.path.join(dir, 'tf.pickle'), 'rb'))
+    idf = pickle.load(open(os.path.join(dir, 'idf.pickle'), 'rb'))
+    tfidf = pickle.load(open(os.path.join(dir, 'tfidf.pickle'), 'rb'))
+    return VSM(corpus, tf, idf, tfidf)
 
 if __name__ == '__main__':
-    pathname = os.path.dirname(sys.argv[0])
-    ROOT_DIR = os.path.abspath(pathname)
-    DATA_DIR = 'data'
-
-    corpus = pickle.load(open(os.path.join(ROOT_DIR, DATA_DIR, 'corpus.pickle'), 'rb'))
-    tf = pickle.load(open(os.path.join(ROOT_DIR, DATA_DIR, 'tf.pickle'), 'rb'))
-    idf = pickle.load(open(os.path.join(ROOT_DIR, DATA_DIR, 'idf.pickle'), 'rb'))
-    tfidf = pickle.load(open(os.path.join(ROOT_DIR, DATA_DIR, 'tfidf.pickle'), 'rb'))
-
-    vsm = VSM(corpus, tf, idf, tfidf)
+    vsm = get_vsm()
     vsm.search('I love you')
 
     while True:
