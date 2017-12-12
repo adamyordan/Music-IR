@@ -42,17 +42,22 @@ def get_tf_for_query(tf, query):
     return v
 
 class VSM:
-    def __init__(self, corpus, tf, idf):
+    def __init__(self, corpus, tf, idf, tfidf):
         self.corpus = corpus
         self.tf = tf
         self.idf = idf
+        self.tfidf = tfidf
         self.songs = { doc['index']: doc for doc in corpus }
 
         print('caching tf_idf vectors...')
         self.doc_tf_idf_vectors = {}
         for doc_id in tqdm(self.get_doc_ids()):
-            doc_vector = make_vector(self.get_tf_idf(get_tf_for_doc(self.tf, doc_id)))
+            doc_vector = make_vector(self.get_tf_idf_for_doc(doc_id))
             self.doc_tf_idf_vectors[doc_id] = doc_vector
+
+    def get_tf_idf_for_doc(self, doc_id):
+        doc_id = str(doc_id)
+        return { term : self.tfidf[term][doc_id] if doc_id in self.tfidf[term] else 0 for term in self.tfidf }
 
     def get_doc_ids(self):
         return [ doc['index'] for doc in self.corpus]
@@ -102,7 +107,12 @@ if __name__ == '__main__':
     corpus = pickle.load(open(os.path.join(ROOT_DIR, DATA_DIR, 'corpus.pickle'), 'rb'))
     tf = pickle.load(open(os.path.join(ROOT_DIR, DATA_DIR, 'tf.pickle'), 'rb'))
     idf = pickle.load(open(os.path.join(ROOT_DIR, DATA_DIR, 'idf.pickle'), 'rb'))
+    tfidf = pickle.load(open(os.path.join(ROOT_DIR, DATA_DIR, 'tfidf.pickle'), 'rb'))
 
-    vsm = VSM(corpus, tf, idf)
+    vsm = VSM(corpus, tf, idf, tfidf)
     vsm.search('I love you')
+
+    while True:
+        q = raw_input('|?- ')
+        vsm.search(q)
 

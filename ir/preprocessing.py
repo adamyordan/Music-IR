@@ -2,6 +2,7 @@ import pickle
 import re
 import sys
 import os.path
+import math
 
 import pandas as pd
 from tqdm import tqdm
@@ -48,6 +49,23 @@ def get_idf(idf, document):
 
 	return idf
 
+def get_tf_idf(tf, idf, N):
+	tfidf = {}
+	N = float(N)
+	for word in tf:
+		tfidf[word] = {}
+		for index in tf[word]:
+			tfidf[word][index] = tf[word][index] * math.log(N / idf[word])
+	return tfidf
+
+def get_tf_idf_per_doc(tfidf, doc_ids):
+	tfidf_per_doc = {}
+	print('caching tfidf per document...')
+	for doc_id in tqdm(doc_ids):
+		doc_id_s = str(doc_id)
+		tfidf_per_doc[doc_id] = { term : tfidf[term][doc_id] if doc_id in tfidf[term] else 0.0 for term in tfidf }
+	return tfidf_per_doc
+
 if __name__ == '__main__':
 	pathname = os.path.dirname(sys.argv[0])
 	ROOT_DIR = os.path.abspath(pathname)
@@ -83,6 +101,9 @@ if __name__ == '__main__':
 
 		corpus.append(data)
 
+	tfidf = get_tf_idf(tf, idf, len(corpus))
+	# tfidf_per_doc = get_tf_idf_per_doc(tfidf, [ song['index'] for song in corpus ])
+
 	with open(os.path.join(ROOT_DIR, DATA_DIR, 'corpus.pickle'), 'wb') as file:
 		print('Number of data in corpus = {}'.format(len(corpus)))
 		print('Dumping corpus...')
@@ -92,7 +113,12 @@ if __name__ == '__main__':
 	with open(os.path.join(ROOT_DIR, DATA_DIR, 'tf.pickle'), 'wb') as file:
 		pickle.dump(tf, file)
 
-
 	with open(os.path.join(ROOT_DIR, DATA_DIR, 'idf.pickle'), 'wb') as file:
 		print('Number of unique words = {}'.format(len(idf)))
 		pickle.dump(idf, file)
+
+	with open(os.path.join(ROOT_DIR, DATA_DIR, 'tfidf.pickle'), 'wb') as file:
+		pickle.dump(tfidf, file)
+
+	# with open(os.path.join(ROOT_DIR, DATA_DIR, 'tfidf_per_doc.pickle'), 'wb') as file:
+	# 	pickle.dump(tfidf_per_doc, file)
