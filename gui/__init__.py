@@ -11,7 +11,7 @@ def hello():
 @app.route("/api/search")
 def api_search():
     q = request.args.get('q')
-    return jsonify(vsm.search_api(q))
+    return jsonify(vsm.search(q))
 
 def start_gui():
-    app.run(debug=True)
+    app.run(debug=False)

@@ -38,6 +38,10 @@
       border-left: 1px solid #eee;
       height: calc(100vh - 130px);
       padding: 20px;
+      overflow-y: scroll;
+    }
+    #song-lyrics {
+      white-space: pre-line;
     }
   </style>
 </head>
@@ -46,12 +50,12 @@
   <div id="se-bar">
     <div class="container">
       <h4 id="se-title">Search Music</h4>
-      <div class="input-group" id="se-input">
+      <form class="input-group" id="se-input">
         <input id="se-input-input" type="text" class="form-control" placeholder="Insert query">
         <span class="input-group-btn">
-          <button class="btn btn-secondary" type="button" id="se-input-submit">Search</button>
+          <button class="btn btn-secondary" type="submit" id="se-input-submit">Search</button>
         </span>
-      </div>
+      </form>
     </div> 
   </div>
 
@@ -73,13 +77,51 @@
       </div>
       <div class="col-md-6" id="song-col">
         <div id="song-container">
-          <h3>Song Title</h3>
-          <p>Lyrics</p>
+          <h3 id="song-title">Song Title</h3>
+          <p id="song-lyrics">Lyrics</p>
         </div>
       </div>
     </div>
   </div>
   
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script>
+    var elems = {
+      search: {
+        form: $('#se-input'),
+        input: $('#se-input-input'),
+        submit: $('#se-input-submit'),
+      },
+      results: $('#res-list-container'),
+      detail: {
+        title: $('#song-title'),
+        lyrics: $('#song-lyrics'),
+      }
+    };
+
+    function set_results(results) {
+      elems.results.empty();
+      results.forEach(function(res) {
+        item = $('<div class="res-item"><span class="res-item-title">' + res.song.title + '</span></div>');
+        item.click(function() {
+          elems.detail.title.text(res.song.title);
+          elems.detail.lyrics.text(res.song.lyrics);
+        });
+        item.appendTo(elems.results);
+      });
+    }
+
+    function search(query) {
+      $.get('/api/search', { q: query }, function(data) {
+        set_results(data);
+      });
+    }
+
+    elems.search.form.submit(function(e) {
+      e.preventDefault();
+      var query = elems.search.input.val();
+      search(query);
+    })
+  </script>
 </body>
 </html>
