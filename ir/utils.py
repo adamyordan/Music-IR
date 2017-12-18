@@ -45,6 +45,7 @@ def get_ranking_with_info(scores, songs, n=10, score_details=None):
                 'lyrics': score_details['lyrics'][doc_id],
                 'artist': score_details['artist'][doc_id],
                 'genre': score_details['genre'][doc_id],
+                'title': score_details['title'][doc_id],
             }})
         
         else:

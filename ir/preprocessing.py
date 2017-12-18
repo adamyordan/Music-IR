@@ -18,10 +18,10 @@ def tokenize(document):
 	document = document.lower()
 
 	# keep only alphabet and whitespaces
-	document = re.sub(r'[^A-Za-z\s-]+', '', document)
+	document = re.sub(r'[^A-Za-z\s\-]+', '', document)
 
 	# split by whitespaces
-	words = re.split(r'[\s-]+', document)
+	words = re.split(r'[\s\-]+', document)
 
 	words = [ps.stem(word) for word in words]
 	return words
@@ -105,10 +105,12 @@ if __name__ == '__main__':
 	idf_artist = {}
 	tf_genre = {}
 	idf_genre = {}
+	tf_title = {}
+	idf_title = {}
 
 
 	for i, song in tqdm(df.iterrows()):
-		if (cnt == 3000):
+		if (cnt == 100):
 			break
 		cnt += 1
 		if (song.isnull().values.any()):
@@ -131,13 +133,15 @@ if __name__ == '__main__':
 		idf_artist = get_idf(idf_artist, data['artist'])
 		tf_genre = get_tf(tf_genre, i, data['genre'])
 		idf_genre = get_idf(idf_genre, data['genre'])
+		tf_title = get_tf(tf_title, i, data['title'])
+		idf_title = get_idf(idf_title, data['title'])
 
 		corpus.append(data)
 
 	tfidf = get_tf_idf(tf, idf, len(corpus))
 	tfidf_artist = get_tf_idf(tf_artist, idf_artist, len(corpus))
-	tfidf_genre = get_tf_idf(tf_genre, idf_genre, len(corpus))
-	# tfidf_per_doc = get_tf_idf_per_doc(tfidf, [ song['index'] for song in corpus ])
+	tfidf_genre  = get_tf_idf(tf_genre , idf_genre , len(corpus))
+	tfidf_title  = get_tf_idf(tf_title , idf_title , len(corpus))
 
 	with open(os.path.join(ROOT_DIR, DATA_DIR, 'corpus.pickle'), 'wb') as file:
 		print('Number of data in corpus = {}'.format(len(corpus)))
@@ -164,3 +168,5 @@ if __name__ == '__main__':
 	dump_to_pickle(tf_genre, 'tf.genre')
 	dump_to_pickle(idf_genre, 'idf.genre')
 	dump_to_pickle(tfidf_genre, 'tfidf.genre')
+	dump_to_pickle(idf_title, 'idf.title')
+	dump_to_pickle(tfidf_title, 'tfidf.title')
