@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  
+  
   <title>Search Engine</title>
   <style>
     #se-bar {
@@ -55,7 +57,25 @@
         <span class="input-group-btn">
           <button class="btn btn-secondary" type="submit" id="se-input-submit">Search</button>
         </span>
+        
       </form>
+      <br>
+      <a class="btn btn-secondary" data-toggle="collapse" href="#advancedSearch" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle weight option</a>
+      <br>
+      <form class="form-inline">
+          <div class="collapse" id="advancedSearch">
+            <br>
+            <div class="form-group"></div>
+              <input id="se-input-title-weight" type="number" min="0" max="1" step="0.01" class="form-control mx-sm-3" width="200" placeholder="Title weight"></input>
+              <input id="se-input-artist-weight" type="number" min="0" max="1" step="0.01" class="form-control mx-sm-3" placeholder="Artist weight"></input>
+              <input id="se-input-genre-weight" type="number" min="0" max="1" step="0.01" class="form-control mx-sm-3" placeholder="Genre weight"></input>
+            </div>
+          </div>
+  
+        </div>
+      </form>
+      
+      
     </div> 
   </div>
 
@@ -85,11 +105,16 @@
   </div>
   
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
   <script>
     var elems = {
       search: {
         form: $('#se-input'),
         input: $('#se-input-input'),
+        artistWeight: $('#se-input-artist-weight'),
+        genreWeight: $('#se-input-genre-weight'),
+        titleWeight: $('#se-input-title-weight'),
         submit: $('#se-input-submit'),
       },
       results: $('#res-list-container'),
@@ -102,17 +127,23 @@
     function set_results(results) {
       elems.results.empty();
       results.forEach(function(res) {
-        item = $('<div class="res-item"><span class="res-item-title">' + res.song.title + '</span></div>');
+        item = $('<div class="res-item"><span class="res-item-title">' + res.song.good_title + '</span></div>');
         item.click(function() {
-          elems.detail.title.text(res.song.title);
+          elems.detail.title.text(res.song.good_title);
           elems.detail.lyrics.text(res.song.lyrics);
         });
         item.appendTo(elems.results);
       });
     }
 
-    function search(query) {
-      $.get('/api/search', { q: query }, function(data) {
+    function search(query, titleWeight, artistWeight, genreWeight) {
+      $.get('/api/search', {
+          q: query,
+          title: titleWeight,
+          artist: artistWeight,
+          genre: genreWeight
+         }, function(data) {
+           console.log(data);
         set_results(data);
       });
     }
@@ -120,8 +151,13 @@
     elems.search.form.submit(function(e) {
       e.preventDefault();
       var query = elems.search.input.val();
-      search(query);
+      var titleWeight = elems.search.titleWeight.val();
+      var artistWeight = elems.search.artistWeight.val();
+      var genreWeight = elems.search.genreWeight.val();
+      search(query, titleWeight, artistWeight, genreWeight);
     })
   </script>
+  
 </body>
+
 </html>

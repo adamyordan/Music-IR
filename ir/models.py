@@ -39,6 +39,6 @@ class VSM:
         scores = { doc_id : cosine(query_vector, self.doc_tf_idf_vectors[doc_id]) for doc_id in tqdm(self.get_doc_ids()) }
         return sorted_by_value(scores)
         
-    def search(self, query, n=10):
+    def search(self, query, titleWeight = 0, artistWeight = 0, genreWeight = 0, n=10):
         scores = self.get_scores_tf_idf(query)
         return get_ranking_with_info(scores, self.songs, n)

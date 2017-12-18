@@ -11,7 +11,10 @@ def hello():
 @app.route("/api/search")
 def api_search():
     q = request.args.get('q')
-    return jsonify(vsm.search(q))
+    titleWeight = request.args.get('title')
+    artistWeight = request.args.get('artist')
+    genreWeight = request.args.get('weight')
+    return jsonify(vsm.search(q, titleWeight, artistWeight, genreWeight))
 
 def start_gui():
     app.run(debug=False)
