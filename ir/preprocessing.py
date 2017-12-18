@@ -97,26 +97,25 @@ if __name__ == '__main__':
 
 	print('Generating TF-IDF...')
 	corpus = []
-	tf = {}
+	tf  = {}
 	idf = {}
 	cnt = 0
 
-	tf_artist = {}
+	tf_artist  = {}
 	idf_artist = {}
-	tf_genre = {}
-	idf_genre = {}
-	tf_title = {}
-	idf_title = {}
-
+	tf_genre   = {}
+	idf_genre  = {}
+	tf_title   = {}
+	idf_title  = {}
 
 	for i, song in tqdm(df.iterrows()):
-		if (cnt == 100):
-			break
-		cnt += 1
 		if (song.isnull().values.any()):
 			continue
+		if (cnt == 3000):
+			break
+		cnt += 1
 		data = {
-			'index': int(i),
+			'index': i,
 			'title': song['song'],
 			'good_title': beautify_title(song['song']),
 			'year': song['year'],
@@ -125,16 +124,15 @@ if __name__ == '__main__':
 			'lyrics': song['lyrics'],
 		}
 
-
 		tf = get_tf(tf, i, data['lyrics'])
 		idf = get_idf(idf, data['lyrics'])
 
-		tf_artist = get_tf(tf_artist, i, data['artist'])
+		tf_artist  = get_tf(tf_artist, i, data['artist'])
 		idf_artist = get_idf(idf_artist, data['artist'])
-		tf_genre = get_tf(tf_genre, i, data['genre'])
-		idf_genre = get_idf(idf_genre, data['genre'])
-		tf_title = get_tf(tf_title, i, data['title'])
-		idf_title = get_idf(idf_title, data['title'])
+		tf_genre   = get_tf(tf_genre, i, data['genre'])
+		idf_genre  = get_idf(idf_genre, data['genre'])
+		tf_title   = get_tf(tf_title, i, data['title'])
+		idf_title  = get_idf(idf_title, data['title'])
 
 		corpus.append(data)
 
@@ -158,9 +156,6 @@ if __name__ == '__main__':
 
 	with open(os.path.join(ROOT_DIR, DATA_DIR, 'tfidf.pickle'), 'wb') as file:
 		pickle.dump(tfidf, file)
-
-	# with open(os.path.join(ROOT_DIR, DATA_DIR, 'tfidf_per_doc.pickle'), 'wb') as file:
-	# 	pickle.dump(tfidf_per_doc, file)
 
 	dump_to_pickle(tf_artist, 'tf.artist')
 	dump_to_pickle(idf_artist, 'idf.artist')
