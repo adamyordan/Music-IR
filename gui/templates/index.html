@@ -66,6 +66,7 @@
           <div class="collapse" id="advancedSearch">
             <br>
             <div class="form-group"></div>
+              <input id="se-input-lyrics-weight" type="number" min="0" max="1" step="0.01" class="form-control mx-sm-3" width="200" placeholder="Lyrics weight"></input>
               <input id="se-input-title-weight" type="number" min="0" max="1" step="0.01" class="form-control mx-sm-3" width="200" placeholder="Title weight"></input>
               <input id="se-input-artist-weight" type="number" min="0" max="1" step="0.01" class="form-control mx-sm-3" placeholder="Artist weight"></input>
               <input id="se-input-genre-weight" type="number" min="0" max="1" step="0.01" class="form-control mx-sm-3" placeholder="Genre weight"></input>
@@ -115,6 +116,7 @@
       search: {
         form: $('#se-input'),
         input: $('#se-input-input'),
+        lyricsWeight: $('#se-input-lyrics-weight'),
         artistWeight: $('#se-input-artist-weight'),
         genreWeight: $('#se-input-genre-weight'),
         titleWeight: $('#se-input-title-weight'),
@@ -143,9 +145,10 @@
       });
     }
 
-    function search(query, titleWeight, artistWeight, genreWeight) {
+    function search(query, lyricsWeight, titleWeight, artistWeight, genreWeight) {
       $.get('/api/search', {
           q: query,
+          lyrics: lyricsWeight,
           title: titleWeight,
           artist: artistWeight,
           genre: genreWeight
@@ -158,10 +161,11 @@
     elems.search.form.submit(function(e) {
       e.preventDefault();
       var query = elems.search.input.val();
+      var lyricsWeight = elems.search.lyricsWeight.val();
       var titleWeight = elems.search.titleWeight.val();
       var artistWeight = elems.search.artistWeight.val();
       var genreWeight = elems.search.genreWeight.val();
-      search(query, titleWeight, artistWeight, genreWeight);
+      search(query, lyricsWeight, titleWeight, artistWeight, genreWeight);
     })
   </script>
   

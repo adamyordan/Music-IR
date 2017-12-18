@@ -39,6 +39,7 @@ class VSM:
         return sorted_by_value(scores)
 
     def get_scores_tf_idf_weighted(self, query, weight = { 'lyrics': 0.3, 'artist': 0.4, 'genre': 0.4 }):
+        print weight
         query_vector_lyrics = make_vector(get_tf_idf(get_tf_for_query(self.tf, query), self.idf))
         query_vector_artist = make_vector(get_tf_idf(get_tf_for_query(self.tfidf_artist, query), self.idf_artist))
         query_vector_genre  = make_vector(get_tf_idf(get_tf_for_query(self.tfidf_genre, query), self.idf_genre))
@@ -48,7 +49,6 @@ class VSM:
         scores_genre  = { doc_id : cosine(query_vector_genre , self.doc_tf_idf_vectors_genre[doc_id])  for doc_id in tqdm(self.get_doc_ids()) }
 
         scores = { doc_id: weight['lyrics'] * scores_lyrics[doc_id] + weight['artist'] * scores_artist[doc_id] + weight['genre'] * scores_genre[doc_id] for doc_id in tqdm(self.get_doc_ids()) }
-
         return sorted_by_value(scores), { 'lyrics': scores_lyrics, 'artist': scores_artist, 'genre': scores_genre }
         
     def search(self, query, weight=None, n=10):
