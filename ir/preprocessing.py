@@ -3,11 +3,8 @@ import re
 import sys
 import os.path
 import math
-<<<<<<< HEAD
 import string
-=======
 import re
->>>>>>> aa8e0866b2e649ac41f953fd942f6e7aeee8bb76
 
 import pandas as pd
 from tqdm import tqdm
@@ -42,9 +39,9 @@ def get_tf(tf, index, document):
 	return tf
 
 def beautify_title(title):
-	re.sub('-', ' ', title)
-	re.sub('i m', 'i\'m', title)
-	string.capwords(title)
+	title = re.sub('-', ' ', title)
+	title = re.sub('i m', 'i\'m', title)
+	title = string.capwords(title)
 	return title
 
 def get_idf(idf, document):
