@@ -16,7 +16,7 @@ def make_vector(tf):
     return np.array(arr)
 
 def get_tf_idf(tf, idf):
-    return { term : float(tf[term]) / idf[term] for term in tf }
+    return { term : float(tf[term]) * idf[term] for term in tf }
 
 def get_tf_for_doc(tf, doc_id):
     return { term : tf[term][doc_id] if doc_id in tf[term] else 0 for term in tf }
