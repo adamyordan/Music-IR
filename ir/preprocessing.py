@@ -3,7 +3,11 @@ import re
 import sys
 import os.path
 import math
+<<<<<<< HEAD
+import string
+=======
 import re
+>>>>>>> aa8e0866b2e649ac41f953fd942f6e7aeee8bb76
 
 import pandas as pd
 from tqdm import tqdm
@@ -36,6 +40,12 @@ def get_tf(tf, index, document):
 		tf[word][index] += 1
 
 	return tf
+
+def beautify_title(title):
+	re.sub('-', ' ', title)
+	re.sub('i m', 'i\'m', title)
+	string.capwords(title)
+	return title
 
 def get_idf(idf, document):
 	words = tokenize(document)
@@ -90,6 +100,7 @@ if __name__ == '__main__':
 	corpus = []
 	tf = {}
 	idf = {}
+	cnt = 0
 
 	tf_artist = {}
 	idf_artist = {}
@@ -98,12 +109,15 @@ if __name__ == '__main__':
 
 
 	for i, song in tqdm(df.iterrows()):
+		if (cnt == 3000):
+			break
+		cnt += 1
 		if (song.isnull().values.any()):
 			continue
-
 		data = {
 			'index': int(i),
 			'title': song['song'],
+			'good_title': beautify_title(song['song']),
 			'year': song['year'],
 			'artist': song['artist'],
 			'genre': song['genre'],
