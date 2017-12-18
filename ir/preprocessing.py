@@ -3,11 +3,8 @@ import re
 import sys
 import os.path
 import math
-<<<<<<< HEAD
 import string
-=======
 import re
->>>>>>> aa8e0866b2e649ac41f953fd942f6e7aeee8bb76
 
 import pandas as pd
 from tqdm import tqdm
