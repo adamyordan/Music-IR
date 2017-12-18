@@ -3,19 +3,23 @@ import re
 import sys
 import os.path
 import math
+import re
 
 import pandas as pd
 from tqdm import tqdm
+
+
+split_pattern = re.compile("(?<!^)\s+(?=[A-Z])(?!.\s)")
 
 def tokenize(document):
 	# lowercase
 	document = document.lower()
 
 	# keep only alphabet and whitespaces
-	document = re.sub(r'[^A-Za-z\s]+', '', document)
+	document = re.sub(r'[^A-Za-z\s-]+', '', document)
 
 	# split by whitespaces
-	words = document.split()
+	words = re.split(r'[\s-]+', document)
 
 	return words
 
@@ -66,6 +70,11 @@ def get_tf_idf_per_doc(tfidf, doc_ids):
 		tfidf_per_doc[doc_id] = { term : tfidf[term][doc_id] if doc_id in tfidf[term] else 0.0 for term in tfidf }
 	return tfidf_per_doc
 
+def dump_to_pickle(obj, filename, dir=None):
+    if not dir: dir = os.path.join(ROOT_DIR, DATA_DIR)
+    with open(os.path.join(dir, filename + '.pickle'), 'wb') as file:
+		pickle.dump(obj, file)
+
 if __name__ == '__main__':
 	pathname = os.path.dirname(sys.argv[0])
 	ROOT_DIR = os.path.abspath(pathname)
@@ -81,6 +90,12 @@ if __name__ == '__main__':
 	corpus = []
 	tf = {}
 	idf = {}
+
+	tf_artist = {}
+	idf_artist = {}
+	tf_genre = {}
+	idf_genre = {}
+
 
 	for i, song in tqdm(df.iterrows()):
 		if (song.isnull().values.any()):
@@ -99,9 +114,16 @@ if __name__ == '__main__':
 		tf = get_tf(tf, i, data['lyrics'])
 		idf = get_idf(idf, data['lyrics'])
 
+		tf_artist = get_tf(tf_artist, i, data['artist'])
+		idf_artist = get_idf(idf_artist, data['artist'])
+		tf_genre = get_tf(tf_genre, i, data['genre'])
+		idf_genre = get_idf(idf_genre, data['genre'])
+
 		corpus.append(data)
 
 	tfidf = get_tf_idf(tf, idf, len(corpus))
+	tfidf_artist = get_tf_idf(tf_artist, idf_artist, len(corpus))
+	tfidf_genre = get_tf_idf(tf_genre, idf_genre, len(corpus))
 	# tfidf_per_doc = get_tf_idf_per_doc(tfidf, [ song['index'] for song in corpus ])
 
 	with open(os.path.join(ROOT_DIR, DATA_DIR, 'corpus.pickle'), 'wb') as file:
@@ -122,3 +144,10 @@ if __name__ == '__main__':
 
 	# with open(os.path.join(ROOT_DIR, DATA_DIR, 'tfidf_per_doc.pickle'), 'wb') as file:
 	# 	pickle.dump(tfidf_per_doc, file)
+
+	dump_to_pickle(tf_artist, 'tf.artist')
+	dump_to_pickle(idf_artist, 'idf.artist')
+	dump_to_pickle(tfidf_artist, 'tfidf.artist')
+	dump_to_pickle(tf_genre, 'tf.genre')
+	dump_to_pickle(idf_genre, 'idf.genre')
+	dump_to_pickle(tfidf_genre, 'tfidf.genre')
