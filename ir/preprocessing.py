@@ -8,9 +8,10 @@ import re
 
 import pandas as pd
 from tqdm import tqdm
-
+from nltk.stem import PorterStemmer
 
 split_pattern = re.compile("(?<!^)\s+(?=[A-Z])(?!.\s)")
+ps = PorterStemmer()
 
 def tokenize(document):
 	# lowercase
@@ -22,6 +23,7 @@ def tokenize(document):
 	# split by whitespaces
 	words = re.split(r'[\s-]+', document)
 
+	words = [ps.stem(word) for word in words]
 	return words
 
 def get_tf(tf, index, document):
