@@ -13,6 +13,24 @@ from nltk.stem import PorterStemmer
 split_pattern = re.compile("(?<!^)\s+(?=[A-Z])(?!.\s)")
 ps = PorterStemmer()
 
+def soundex(string):
+	soundex_result = string[0].upper()
+	string = re.sub('[hw]', '', string, flags=re.I)
+	string = re.sub('[bfpv]+', '1', string, flags=re.I)
+	string = re.sub('[cgjkqsxz]+', '2', string, flags=re.I)
+	string = re.sub('[dt]+', '3', string, flags=re.I)
+	string = re.sub('l+', '4', string, flags=re.I)
+	string = re.sub('[mn]+', '5', string, flags=re.I)
+	string = re.sub('r+', '6', string, flags=re.I)
+	string = string[1:]
+	string = re.sub('[aeiouy]','', string, flags=re.I)
+
+	soundex_result += string[0:3]
+
+	if len(soundex_result) < 4:
+		soundex_result += '0'*(4-len(soundex_result))
+	return soundex_result
+
 def tokenize(document):
 	# lowercase
 	document = document.lower()
@@ -23,7 +41,12 @@ def tokenize(document):
 	# split by whitespaces
 	words = re.split(r'[\s\-]+', document)
 
+	# stem
 	words = [ps.stem(word) for word in words]
+
+	# soundex
+	# words = [soundex(word) for word in words if len(word) > 0]
+
 	return words
 
 def get_tf(tf, index, document):
