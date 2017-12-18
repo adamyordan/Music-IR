@@ -30,7 +30,11 @@
   .cs-loader-inner label {
     font-size: 20px;
     opacity: 0;
-    display:inline-block;
+    display:inline-block;0
+  }
+
+  #advancedSearch input {
+    width: 100px;
   }
 
   @keyframes lol {
@@ -148,14 +152,14 @@
         <span class="input-group-btn">
           <button class="btn btn-secondary" type="submit" id="se-input-submit">Search</button>
         </span>
-        
       </form>
       <br>
       <a class="btn btn-secondary" data-toggle="collapse" href="#advancedSearch" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle advanced option</a>
       <br>
-      <form class="form-inline">
-          <div class="collapse" id="advancedSearch">
-            <br>
+      <div class="collapse" id="advancedSearch">
+        <br>
+          <form class="form-inline">
+                
             <div class="form-group">
               <label for="se-input-similarities">Similarities</label>
               <select class="form-control mx-sm-3" id="se-input-similarities">
@@ -164,19 +168,31 @@
                 <option value="dot">Dot</option>
                 <option value="jackard">Jackard</option>
               </select>
+            </div>
+
+            <div class="form-group">
               <label for="se-input-lyrics-weight">Lyrics</label>
               <input id="se-input-lyrics-weight" type="number" min="0" max="1" step="0.01" class="form-control mx-sm-3" placeholder="Lyrics weight"></input>
+            </div>
+
+            <div class="form-group">
               <label for="se-input-title-weight">Title</label>
               <input id="se-input-title-weight" type="number" min="0" max="1" step="0.01" class="form-control mx-sm-3" placeholder="Title weight"></input>
+            </div>
+
+            <div class="form-group">
               <label for="se-input-artist-weight">Artist</label>
               <input id="se-input-artist-weight" type="number" min="0" max="1" step="0.01" class="form-control mx-sm-3" placeholder="Artist weight"></input>
+            </div>
+
+            <div class="form-group">
               <label for="se-input-genre-weight">Genre</label>
               <input id="se-input-genre-weight" type="number" min="0" max="1" step="0.01" class="form-control mx-sm-3" placeholder="Genre weight"></input>
-            </div>
+            </div> 
           </div>
   
-        </div>
-      </form>
+        </form>
+      </div>
       
       
     </div> 
@@ -272,7 +288,7 @@
     elems.search.artistWeight.val(0.4);
     elems.search.genreWeight.val(0.4);
     elems.search.titleWeight.val(0.4);
-    elems.search.titleWeight.val('cosine');
+    elems.search.similarities.val('cosine');
   </script>
   
 </body>
