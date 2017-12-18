@@ -12,17 +12,16 @@ ROOT_DIR = os.path.abspath(pathname)
 DATA_DIR = 'data'
 
 def make_vector(tf):
-    return np.array(tf.values())
+    arr = [ tf[x] for x in sorted(tf.keys()) ]
+    return np.array(arr)
 
 def get_tf_idf(tf, idf):
     return { term : float(tf[term]) / idf[term] for term in tf }
 
 def get_tf_for_doc(tf, doc_id):
-    doc_id = str(doc_id)
     return { term : tf[term][doc_id] if doc_id in tf[term] else 0 for term in tf }
 
 def get_tf_idf_for_doc(tfidf, doc_id):
-    doc_id = str(doc_id)
     return { term : tfidf[term][doc_id] if doc_id in tfidf[term] else 0 for term in tfidf }
 
 def get_tf_for_query(tf, query):

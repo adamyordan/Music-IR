@@ -24,6 +24,7 @@ class VSM:
         self.doc_tf_idf_vectors_genre  = { doc_id: make_vector(get_tf_idf_for_doc(tfidf_genre, doc_id))  for doc_id in tqdm(self.get_doc_ids()) }
         self.doc_tf_idf_vectors_title  = { doc_id: make_vector(get_tf_idf_for_doc(tfidf_title, doc_id))  for doc_id in tqdm(self.get_doc_ids()) }
 
+
     def get_tf_idf_for_doc(self, doc_id, tfidf):
         doc_id = str(doc_id)
         return { term : tfidf[term][doc_id] if doc_id in tfidf[term] else 0 for term in tfidf }
