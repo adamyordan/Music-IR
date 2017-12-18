@@ -39,9 +39,9 @@ def get_tf(tf, index, document):
 	return tf
 
 def beautify_title(title):
-	re.sub('-', ' ', title)
-	re.sub('i m', 'i\'m', title)
-	string.capwords(title)
+	title = re.sub('-', ' ', title)
+	title = re.sub('i m', 'i\'m', title)
+	title = string.capwords(title)
 	return title
 
 def get_idf(idf, document):
