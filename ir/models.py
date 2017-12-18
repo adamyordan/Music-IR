@@ -51,6 +51,6 @@ class VSM:
 
         return sorted_by_value(scores), { 'lyrics': scores_lyrics, 'artist': scores_artist, 'genre': scores_genre }
         
-    def search(self, query, n=10):
-        scores, score_details = self.get_scores_tf_idf_weighted(query)
+    def search(self, query, weight=None, n=10):
+        scores, score_details = self.get_scores_tf_idf_weighted(query, weight)
         return get_ranking_with_info(scores, self.songs, n, score_details)
