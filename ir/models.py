@@ -1,33 +1,32 @@
 import numpy as np
 from tqdm import tqdm
 
-from utils import make_vector, get_tf_for_doc, get_tf_for_query, sorted_by_value, get_ranking_with_info, dump_to_pickle, load_from_pickle
+from utils import make_vector, get_tf_idf, get_tf_for_doc, get_tf_idf_for_doc, get_tf_for_query, sorted_by_value, get_ranking_with_info, dump_to_pickle, load_from_pickle
 from similarities import cosine
 
 class VSM:
-    def __init__(self, corpus, tf, idf, tfidf, use_cache=True):
+    def __init__(self, corpus, tf, idf, tfidf, idf_artist, tfidf_artist, idf_genre, tfidf_genre):
         self.corpus = corpus
         self.tf = tf
         self.idf = idf
         self.tfidf = tfidf
         self.songs = { doc['index']: doc for doc in corpus }
+        self.idf_artist = idf_artist
+        self.tfidf_artist = tfidf_artist
+        self.idf_genre = idf_genre
+        self.tfidf_genre = tfidf_genre 
 
         print('caching tf_idf vectors...')
-        vsm_tfidf = {}
-        for doc_id in tqdm(self.get_doc_ids()):
-            doc_vector = make_vector(self.get_tf_idf_for_doc(doc_id))
-            vsm_tfidf[doc_id] = doc_vector
-        self.doc_tf_idf_vectors = vsm_tfidf
+        self.doc_tf_idf_vectors        = { doc_id: make_vector(get_tf_idf_for_doc(tfidf, doc_id))        for doc_id in tqdm(self.get_doc_ids()) }
+        self.doc_tf_idf_vectors_artist = { doc_id: make_vector(get_tf_idf_for_doc(tfidf_artist, doc_id)) for doc_id in tqdm(self.get_doc_ids()) }
+        self.doc_tf_idf_vectors_genre  = { doc_id: make_vector(get_tf_idf_for_doc(tfidf_genre, doc_id))  for doc_id in tqdm(self.get_doc_ids()) }
 
-    def get_tf_idf_for_doc(self, doc_id):
+    def get_tf_idf_for_doc(self, doc_id, tfidf):
         doc_id = str(doc_id)
-        return { term : self.tfidf[term][doc_id] if doc_id in self.tfidf[term] else 0 for term in self.tfidf }
+        return { term : tfidf[term][doc_id] if doc_id in tfidf[term] else 0 for term in tfidf }
 
     def get_doc_ids(self):
         return [ doc['index'] for doc in self.corpus]
-
-    def get_tf_idf(self, tf):
-        return { term : float(tf[term]) / self.idf[term] for term in tf }
 
     def get_scores_tf(self, query):
         query_vector = make_vector(get_tf_for_query(self.tf, query))
@@ -38,7 +37,21 @@ class VSM:
         query_vector = make_vector(self.get_tf_idf(get_tf_for_query(self.tf, query)))
         scores = { doc_id : cosine(query_vector, self.doc_tf_idf_vectors[doc_id]) for doc_id in tqdm(self.get_doc_ids()) }
         return sorted_by_value(scores)
+
+    def get_scores_tf_idf_weighted(self, query, weight = { 'lyrics': 0.3, 'artist': 0.4, 'genre': 0.4 }):
+        query_vector_lyrics = make_vector(get_tf_idf(get_tf_for_query(self.tf, query), self.idf))
+        query_vector_artist = make_vector(get_tf_idf(get_tf_for_query(self.tfidf_artist, query), self.idf_artist))
+        query_vector_genre  = make_vector(get_tf_idf(get_tf_for_query(self.tfidf_genre, query), self.idf_genre))
+
+        scores_lyrics = { doc_id : cosine(query_vector_lyrics, self.doc_tf_idf_vectors[doc_id])        for doc_id in tqdm(self.get_doc_ids()) }
+        scores_artist = { doc_id : cosine(query_vector_artist, self.doc_tf_idf_vectors_artist[doc_id]) for doc_id in tqdm(self.get_doc_ids()) }
+        scores_genre  = { doc_id : cosine(query_vector_genre , self.doc_tf_idf_vectors_genre[doc_id])  for doc_id in tqdm(self.get_doc_ids()) }
+
+        scores = { doc_id: weight['lyrics'] * scores_lyrics[doc_id] + weight['artist'] * scores_artist[doc_id] + weight['genre'] * scores_genre[doc_id] for doc_id in tqdm(self.get_doc_ids()) }
+
+        return sorted_by_value(scores), { 'lyrics': scores_lyrics, 'artist': scores_artist, 'genre': scores_genre }
         
     def search(self, query, titleWeight = 0, artistWeight = 0, genreWeight = 0, n=10):
-        scores = self.get_scores_tf_idf(query)
-        return get_ranking_with_info(scores, self.songs, n)
+        scores, score_details = self.get_scores_tf_idf_weighted(query)
+        return get_ranking_with_info(scores, self.songs, n, score_details)
+

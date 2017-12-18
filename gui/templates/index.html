@@ -98,6 +98,9 @@
       <div class="col-md-6" id="song-col">
         <div id="song-container">
           <h3 id="song-title">Song Title</h3>
+          Artist: <span id="song-artist">artist</span><br>
+          Genre: <span id="song-genre">genre</span><br>
+          <br>
           <p id="song-lyrics">Lyrics</p>
         </div>
       </div>
@@ -121,6 +124,8 @@
       detail: {
         title: $('#song-title'),
         lyrics: $('#song-lyrics'),
+        artist: $('#song-artist'),
+        genre: $('#song-genre'),
       }
     };
 
@@ -131,6 +136,8 @@
         item.click(function() {
           elems.detail.title.text(res.song.good_title);
           elems.detail.lyrics.text(res.song.lyrics);
+          elems.detail.artist.text(res.song.artist);
+          elems.detail.genre.text(res.song.genre);
         });
         item.appendTo(elems.results);
       });

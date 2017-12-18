@@ -16,7 +16,11 @@ def get_vsm(dir=None):
     tf = pickle.load(open(os.path.join(dir, 'tf.pickle'), 'rb'))
     idf = pickle.load(open(os.path.join(dir, 'idf.pickle'), 'rb'))
     tfidf = pickle.load(open(os.path.join(dir, 'tfidf.pickle'), 'rb'))
-    return VSM(corpus, tf, idf, tfidf)
+    idf_artist = pickle.load(open(os.path.join(dir, 'idf.artist.pickle'), 'rb'))
+    tfidf_artist = pickle.load(open(os.path.join(dir, 'tfidf.artist.pickle'), 'rb'))
+    idf_genre = pickle.load(open(os.path.join(dir, 'idf.genre.pickle'), 'rb'))
+    tfidf_genre = pickle.load(open(os.path.join(dir, 'tfidf.genre.pickle'), 'rb'))
+    return VSM(corpus, tf, idf, tfidf, idf_artist, tfidf_artist, idf_genre, tfidf_genre)
 
 if __name__ == '__main__':
     vsm = get_vsm()

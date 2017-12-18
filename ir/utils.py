@@ -14,6 +14,9 @@ DATA_DIR = 'data'
 def make_vector(tf):
     return np.array(tf.values())
 
+def get_tf_idf(tf, idf):
+    return { term : float(tf[term]) / idf[term] for term in tf }
+
 def get_tf_for_doc(tf, doc_id):
     doc_id = str(doc_id)
     return { term : tf[term][doc_id] if doc_id in tf[term] else 0 for term in tf }
@@ -31,12 +34,21 @@ def get_tf_for_query(tf, query):
         my_tf[word] += 1
     return { term : my_tf[term] if term in my_tf else 0 for term in tf }
 
-def get_ranking_with_info(scores, songs, n=10):
+def get_ranking_with_info(scores, songs, n=10, score_details=None):
     res = []
     for i in range(n):
         doc_id, score = scores[i]
         if score == 0 or math.isnan(score): break
-        res.append({ 'rank': i+1, 'score': score, 'song': songs[doc_id] })
+
+        if score_details:
+            res.append({ 'rank': i+1, 'score': score, 'song': songs[doc_id], 'scores': {
+                'lyrics': score_details['lyrics'][doc_id],
+                'artist': score_details['artist'][doc_id],
+                'genre': score_details['genre'][doc_id],
+            }})
+        
+        else:
+            res.append({ 'rank': i+1, 'score': score, 'song': songs[doc_id] })
     return res
 
 def display_result(results):
@@ -45,7 +57,7 @@ def display_result(results):
         print
 
     for i, result in enumerate(results):
-        print('Position #' + str(i+1) + ', score: ' + str(result['score']))
+        print('Position #' + str(i+1) + ', score: ' + str(result['score']) + ' ' + str(result['scores']))
         print('-' * 32)
         print result['song']
         print
