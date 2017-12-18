@@ -36,7 +36,6 @@ def get_tf_for_query(tf, query):
 def get_ranking_with_info(scores, songs, n=10, score_details=None):
     res = []
     for i in range(n):
-        print(scores[i])
         doc_id, score = scores[i]
         if score == 0 or math.isnan(score): break
 

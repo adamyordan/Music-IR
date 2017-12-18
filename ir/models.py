@@ -32,17 +32,17 @@ class VSM:
     def get_doc_ids(self):
         return [ doc['index'] for doc in self.corpus]
 
-    def get_scores_tf(self, query, sim_algo='cosine'):
+    def get_scores_tf(self, query, similarities='cosine'):
         query_vector = make_vector(get_tf_for_query(self.tf, query))
-        scores = { doc_id: sim(query_vector, make_vector(get_tf_for_doc(self.tf, doc_id)), sim_algo) for doc_id in tqdm(self.get_doc_ids()) }
+        scores = { doc_id: sim(query_vector, make_vector(get_tf_for_doc(self.tf, doc_id)), similarities) for doc_id in tqdm(self.get_doc_ids()) }
         return sorted_by_value(scores)
 
-    def get_scores_tf_idf(self, query, sim_algo='cosine'):
+    def get_scores_tf_idf(self, query, similarities='cosine'):
         query_vector = make_vector(self.get_tf_idf(get_tf_for_query(self.tf, query)))
-        scores = { doc_id : sim(query_vector, self.doc_tf_idf_vectors[doc_id], sim_algo) for doc_id in tqdm(self.get_doc_ids()) }
+        scores = { doc_id : sim(query_vector, self.doc_tf_idf_vectors[doc_id], similarities) for doc_id in tqdm(self.get_doc_ids()) }
         return sorted_by_value(scores)
 
-    def get_scores_tf_idf_weighted(self, query, weight, sim_algo='cosine'):
+    def get_scores_tf_idf_weighted(self, query, weight, similarities='cosine'):
         if not weight: weight = { 'lyrics': 0.3, 'artist': 0.4, 'genre': 0.4, 'title': 0.5 }
 
         query_vector_lyrics = make_vector(get_tf_idf(get_tf_for_query(self.tf, query), self.idf))
@@ -50,14 +50,14 @@ class VSM:
         query_vector_genre  = make_vector(get_tf_idf(get_tf_for_query(self.tfidf_genre, query), self.idf_genre))
         query_vector_title  = make_vector(get_tf_idf(get_tf_for_query(self.tfidf_title, query), self.idf_title))
 
-        scores_lyrics = { doc_id : sim(query_vector_lyrics, self.doc_tf_idf_vectors[doc_id], sim_algo)        for doc_id in tqdm(self.get_doc_ids()) }
-        scores_artist = { doc_id : sim(query_vector_artist, self.doc_tf_idf_vectors_artist[doc_id], sim_algo) for doc_id in tqdm(self.get_doc_ids()) }
-        scores_genre  = { doc_id : sim(query_vector_genre , self.doc_tf_idf_vectors_genre[doc_id], sim_algo)  for doc_id in tqdm(self.get_doc_ids()) }
-        scores_title  = { doc_id : sim(query_vector_title , self.doc_tf_idf_vectors_title[doc_id], sim_algo)  for doc_id in tqdm(self.get_doc_ids()) }
+        scores_lyrics = { doc_id : sim(query_vector_lyrics, self.doc_tf_idf_vectors[doc_id], similarities)        for doc_id in tqdm(self.get_doc_ids()) }
+        scores_artist = { doc_id : sim(query_vector_artist, self.doc_tf_idf_vectors_artist[doc_id], similarities) for doc_id in tqdm(self.get_doc_ids()) }
+        scores_genre  = { doc_id : sim(query_vector_genre , self.doc_tf_idf_vectors_genre[doc_id], similarities)  for doc_id in tqdm(self.get_doc_ids()) }
+        scores_title  = { doc_id : sim(query_vector_title , self.doc_tf_idf_vectors_title[doc_id], similarities)  for doc_id in tqdm(self.get_doc_ids()) }
 
         scores = { doc_id: weight['lyrics'] * scores_lyrics[doc_id] + weight['artist'] * scores_artist[doc_id] + weight['genre'] * scores_genre[doc_id] + weight['title'] * scores_title[doc_id] for doc_id in tqdm(self.get_doc_ids()) }
         return sorted_by_value(scores), { 'lyrics': scores_lyrics, 'artist': scores_artist, 'genre': scores_genre, 'title': scores_title }
         
-    def search(self, query, weight=None, n=10):
-        scores, score_details = self.get_scores_tf_idf_weighted(query, weight)
+    def search(self, query, weight=None, similarities='cosine', n=10):
+        scores, score_details = self.get_scores_tf_idf_weighted(query, weight, similarities)
         return get_ranking_with_info(scores, self.songs, n, score_details)

@@ -82,7 +82,7 @@ def get_tf_idf_per_doc(tfidf, doc_ids):
 def dump_to_pickle(obj, filename, dir=None):
     if not dir: dir = os.path.join(ROOT_DIR, DATA_DIR)
     with open(os.path.join(dir, filename + '.pickle'), 'wb') as file:
-		pickle.dump(obj, file)
+    	pickle.dump(obj, file)
 
 if __name__ == '__main__':
 	pathname = os.path.dirname(sys.argv[0])

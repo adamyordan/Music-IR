@@ -15,8 +15,10 @@ def api_search():
     titleWeight = 0.0 if not request.args.get('title') else request.args.get('title')
     artistWeight = 0.0 if not request.args.get('artist') else request.args.get('artist')
     genreWeight = 0.0 if not request.args.get('genre') else request.args.get('genre')
-    print lyricsWeight, titleWeight, artistWeight, genreWeight
-    return jsonify(vsm.search(q, { 'lyrics': float(lyricsWeight), 'title': float(titleWeight), 'artist': float(artistWeight), 'genre': float(genreWeight) }))
+    similarities = 'cosine' if not request.args.get('similarities') else request.args.get('similarities')
+    # print lyricsWeight, titleWeight, artistWeight, genreWeight
+    search = vsm.search(q, { 'lyrics': float(lyricsWeight), 'title': float(titleWeight), 'artist': float(artistWeight), 'genre': float(genreWeight) }, similarities)
+    return jsonify(search)
 
 def start_gui():
     app.run(debug=False)

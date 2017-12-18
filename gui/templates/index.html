@@ -60,12 +60,19 @@
         
       </form>
       <br>
-      <a class="btn btn-secondary" data-toggle="collapse" href="#advancedSearch" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle weight option</a>
+      <a class="btn btn-secondary" data-toggle="collapse" href="#advancedSearch" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle advanced option</a>
       <br>
       <form class="form-inline">
           <div class="collapse" id="advancedSearch">
             <br>
             <div class="form-group">
+              <label for="se-input-similarities">Similarities</label>
+              <select class="form-control mx-sm-3" id="se-input-similarities">
+                <option value="cosine">Cosine</option>
+                <option value="dice">Dice</option>
+                <option value="dot">Dot</option>
+                <option value="jackard">Jackard</option>
+              </select>
               <label for="se-input-lyrics-weight">Lyrics</label>
               <input id="se-input-lyrics-weight" type="number" min="0" max="1" step="0.01" class="form-control mx-sm-3" placeholder="Lyrics weight"></input>
               <label for="se-input-title-weight">Title</label>
@@ -121,6 +128,7 @@
         artistWeight: $('#se-input-artist-weight'),
         genreWeight: $('#se-input-genre-weight'),
         titleWeight: $('#se-input-title-weight'),
+        similarities: $('#se-input-similarities'),
         submit: $('#se-input-submit'),
       },
       results: $('#res-list-container'),
@@ -142,13 +150,14 @@
       });
     }
 
-    function search(query, lyricsWeight, titleWeight, artistWeight, genreWeight) {
+    function search(query, lyricsWeight, titleWeight, artistWeight, genreWeight, similarities) {
       $.get('/api/search', {
           q: query,
           lyrics: lyricsWeight,
           title: titleWeight,
           artist: artistWeight,
-          genre: genreWeight
+          genre: genreWeight,
+          similarities: similarities
          }, function(data) {
         set_results(data);
       });
@@ -161,14 +170,15 @@
       var titleWeight = elems.search.titleWeight.val();
       var artistWeight = elems.search.artistWeight.val();
       var genreWeight = elems.search.genreWeight.val();
-      search(query, lyricsWeight, titleWeight, artistWeight, genreWeight);
+      var similarities = elems.search.similarities.val();
+      search(query, lyricsWeight, titleWeight, artistWeight, genreWeight, similarities);
     })
 
     elems.search.lyricsWeight.val(0.4);
     elems.search.artistWeight.val(0.4);
     elems.search.genreWeight.val(0.4);
     elems.search.titleWeight.val(0.4);
-
+    elems.search.titleWeight.val('cosine');
   </script>
   
 </body>
