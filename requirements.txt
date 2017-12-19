@@ -10,3 +10,4 @@ pytz==2017.3
 six==1.11.0
 tqdm==4.19.4
 Werkzeug==0.13
+nltk
